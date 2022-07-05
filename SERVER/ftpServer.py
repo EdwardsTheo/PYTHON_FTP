@@ -125,7 +125,6 @@ def check_right(directory, userInfo):
     check = True
     cityName = select_id_site(userInfo[0][5])
     cityName = cityName[0][0]
-    print(directory)
     if cityName != "PARIS":
         if cityName != directory:
             check = False
