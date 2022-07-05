@@ -1,0 +1,8 @@
+2022-07-05 11:02:31,652 Server started
+2022-07-05 11:02:33,328 Connected with ('127.0.0.1', 61629)
+2022-07-05 11:02:34,984 (<class 'sqlite3.OperationalError'>, OperationalError('unable to open database file'), <traceback object at 0x000001EDE72A5380>)
+2022-07-05 11:02:51,840 Connected with ('127.0.0.1', 61637)
+2022-07-05 11:02:53,437 Server started
+2022-07-05 11:03:45,279 Server started
+2022-07-05 11:03:46,626 Connected with ('127.0.0.1', 61671)
+2022-07-05 11:03:51,544 The user btheobald successfully logged into the server

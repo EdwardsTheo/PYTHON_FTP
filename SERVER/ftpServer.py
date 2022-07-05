@@ -84,7 +84,7 @@ def update_chat(client, logger, address):  # Main loop to manage the client inpu
             exc_type, e, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             logger.setLevel(logging.WARNING)
-            logger.warning(fname)
+            logger.warning(exc_type, e, exc_tb)
             exit()
 
 
@@ -190,10 +190,8 @@ def delete_file(userInfo, cmd):
     check = check_file(directory, path)
     if check:
         check = check_right(directory, userInfo)
-        print(check)
         if check:
             path = path + "\\" + cmd[1]
-            print(path)
             os.remove(path)
             cmd = "SUCCESS 3"
             logger.setLevel(logging.INFO)
@@ -202,7 +200,6 @@ def delete_file(userInfo, cmd):
             cmd = "ERROR DEL 1"
     else:
         cmd = "ERROR DEL 0"
-    print(cmd)
     return cmd
 
 
