@@ -9,13 +9,13 @@ import bcrypt
 
 from SQL.SELECT import *
 
-sys.path.insert(1, 'C:\\Users\\bapti\\Desktop\\pyFTP\\')
-sys.path.insert(1, 'C:\\Users\\bapti\\Desktop\\pyFTP\\SQL')
+sys.path.insert(1, 'C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\')
+sys.path.insert(1, 'C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\SQL')
 from SQL import SELECT, MODIFY
 
 today = date.today()
 d = today.strftime("%d_%m_%Y")
-logfile = "C:\\Users\\bapti\\Desktop\\pyFTP\\LOG\\STORAGE\\" + "ftpserver_log_" + d + ".log"
+logfile = "C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\LOG\\STORAGE\\" + "ftpserver_log_" + d + ".log"
 logging.basicConfig(filename=logfile,
                     format='%(asctime)s %(message)s',
                     filemode='a+')
@@ -26,30 +26,27 @@ def main():
     HOST = "127.0.0.1"
     PORT = 5002
 
-    # initialise une liste de tous les clients connecté au socket
     client_sockets = set()
-    MySocket = socket.socket()  # on cré un socket tcp
+    MySocket = socket.socket()
     MySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,
-                        1)  # on rend le port reutilisable pour que plusieurs clients puisse s'y connecter
-    MySocket.bind((HOST, PORT))  # associe le socket à l'adresse qu'on utilise
-    MySocket.listen()  # le socket est en attente de connection, il y aura maximum 42 connections
+                        1)
+    MySocket.bind((HOST, PORT))
+    MySocket.listen()  # Make the socket listen to connection
     logger.setLevel(logging.INFO)
     logger.info("Server started")
 
-    # initialisation des listes permettant l'identification des différents clients dans le chat bot
-    clients = list()  # list de clients connectés
-    nicknames = list()  # list des pseudos connectés
+    clients = list()  # List of connected client
 
     while True:
         client, address = MySocket.accept()
         logger.setLevel(logging.INFO)
         logger.info("Connected with " + str(address))
-        client.send('ASK PSEUDO'.encode('utf-8'))
+        client.send('ASK PSEUDO'.encode('utf-8'))  # Ask the login to start the authent
         thread = Thread(target=update_chat, args=(client, logger, str(address)))
         thread.start()
 
 
-def update_chat(client, logger, address):
+def update_chat(client, logger, address):  # Main loop to manage the client input
     while True:
         try:
             msg = ''
@@ -91,11 +88,11 @@ def update_chat(client, logger, address):
             exit()
 
 
-def cmd_list(directory, userInfo):
+def cmd_list(directory, userInfo):   # Command LIST
     cmd = ""
     if directory == "/": directory = ""
     directory = directory.upper()
-    path = 'C:\\Users\\bapti\\Desktop\\pyFTP\\Serveur_Storage\\' + directory
+    path = 'C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\Serveur_Storage\\' + directory
     # CHECK IF DIRECTORY EXIST
     check = check_directory(directory, path)
     if check:
@@ -189,7 +186,7 @@ def send_message_list(client, command):
 
 def delete_file(userInfo, cmd):
     directory = cmd[0]
-    path = 'C:\\Users\\bapti\\Desktop\\pyFTP\\Serveur_Storage\\' + directory + "\\" + cmd[1]
+    path = 'C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\Serveur_Storage\\' + directory + "\\" + cmd[1]
     check = check_file(directory, path)
     if check:
         check = check_right(directory, userInfo)
@@ -212,7 +209,7 @@ def delete_file(userInfo, cmd):
 def get_file(directory, file_destination, userInfo, client):
     new_dir = directory.split('/')
     directory = new_dir[0] + "\\" + new_dir[1]
-    path = "C:\\Users\\bapti\\Desktop\\pyFTP\\Serveur_Storage\\"
+    path = "C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\Serveur_Storage\\"
     directory = path + directory
     check = check_file(path, directory)
     if check:
@@ -239,7 +236,7 @@ def get_file_data(path):
 
 def create_file(filename, file_data, directory, userInfo):
     directory = directory[0]
-    path = 'C:\\Users\\bapti\\Desktop\\pyFTP\\Serveur_Storage\\'
+    path = 'C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\Serveur_Storage\\'
     check = check_directory(directory, path)
     if check:
         check = check_right(directory, userInfo)
@@ -270,7 +267,7 @@ def create_copy(path, directory, filename):
     return path
 
 
-def loop_copy(path, first_path, directory):  # Permet de créer des copies à l'infini
+def loop_copy(path, first_path, directory):  # Allow the creation of copy of files
     isFile = os.path.isfile(path)
     i = 1
     while isFile:

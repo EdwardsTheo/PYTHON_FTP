@@ -6,7 +6,7 @@ import threading
 from SQL import SELECT
 
 
-def main_connect():
+def main_connect():  # Main function to connect to the server
     try:
         a_socket = socket.socket()
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,17 +18,15 @@ def main_connect():
         return False
 
 
-def receive(client):
+def receive(client):  # Main loop to manage the communication between the client and the server
     stop_thread = False
     while True:
         if stop_thread:
             break
         try:
-            # print(client.recv(1024))
             msg = client.recv(1024).decode('utf-8')
             cmd = msg.split(" ")
-            # Command ask by the client
-            if cmd[0] == "SUCCESS":  # Prompt to launch command
+            if cmd[0] == "SUCCESS":
                 success_print(client, cmd)
             elif cmd[0] == "ERROR":
                 if cmd[1] == "PSEUDO":
@@ -55,67 +53,58 @@ def receive(client):
         except Exception as e:
             exc_type, e, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            #print(fname)
+            # print(fname)
 
 
-def sort_cmd(client):
+def sort_cmd(client):  # Main loop to manage the user input
     cmd = ask_input()
     cmd = cmd.split(" ")
     if cmd[0] == "HELP":
         cmd_help()
     elif cmd[0] == "LIST":
         cmd_list(client, cmd)
-        receive()
+        receive(client)
     elif cmd[0] == "SEND":
         cmd_send(client, cmd)
-        receive()
+        receive(client)
     elif cmd[0] == "EXIT":
         print("bye bye")
         exit()
     elif cmd[0] == "GET":
         cmd_get(client, cmd)
-        receive()
+        receive(client)
     elif cmd[0] == "DEL":
         cmd_del(client, cmd)
-        receive()
+        receive(client)
     else:
         print("Please select an existing command or press HELP")
     sort_cmd(client)
 
 
-def success_print(client, code):
-    if code[1] == "0":
-        print("You are connected ! Press HELP, to see all the avaiable command")
-    elif code[1] == "1":
-        create_file(code[2], code[3], code[4])
-    elif code[1] == "2":
-        print("The file has been sent")
-    elif code[1] == "3":
-        print("The file has been deleted")
-    elif code[1] == "4":
-        print_list(code)
-    sort_cmd(client)
+def send_input(command, client):
+    client.send(command.encode("utf-8"))
 
 
-def print_list(code):
-    del code[0:2]
-    print("Result of the list command :")
-    for elem in code:
-        print("----> " + elem)
+def basic_prompt():
+    message = input("ftp_server$> ")
+    return message
+
+
+def ask_input():
+    msg = input("ftp_server$> ")
+    return msg
 
 
 def ask_pseudo():
     print("Authentificate with your pseudo to connect to the server")
-    #cmd = ask_input()
-    cmd="fpires"
+    cmd = ask_input()
     cmd = "LOG PSEUDO " + cmd
     return cmd
 
 
 def ask_password():
     print("Enter your password")
-    # cmd = ask_input()
-    cmd = "Abracadabra@92"
+    cmd = ask_input()
     cmd = "LOG PASSWORD " + cmd
     return cmd
 
@@ -149,7 +138,7 @@ def error_pass(code, client):
         exit()
 
 
-def cmd_send(client, cmd):
+def cmd_send(client, cmd):  # Command send function
     len_cmd = len(cmd)
     if len_cmd != 3:
         print("Please give the exact number of parameters to use the command")
@@ -187,7 +176,7 @@ def get_file_data(path):
     return data
 
 
-def cmd_del(client, cmd):
+def cmd_del(client, cmd):  # Command DEL function
     len_cmd = len(cmd)
     if len_cmd != 2:
         print("Please give the exact number of parameters to use the command")
@@ -200,7 +189,7 @@ def cmd_del(client, cmd):
             send_input("DEL " + cmd[1], client)
 
 
-def cmd_list(client, cmd):
+def cmd_list(client, cmd):  # Command LIST function
     len_cmd = len(cmd)
     if len_cmd != 2:
         print("Please give the exact number of parameters to use the command")
@@ -213,7 +202,7 @@ def cmd_list(client, cmd):
             send_input("LIST " + cmd[1], client)
 
 
-def cmd_get(client, cmd):
+def cmd_get(client, cmd):  # Command GET function
     len_cmd = len(cmd)
     if len_cmd != 3:
         print("Please give the exact number of parameters to use the command")
@@ -229,14 +218,6 @@ def cmd_get(client, cmd):
             else:
                 print("The directory of destination doesn't exist")
                 sort_cmd(client)
-
-
-def create_file(filename, data, destination):
-    path = destination
-    path = create_copy(path, filename)
-    with open(path, 'w') as f:
-        f.write(data)
-    print("The file has been successfully updated")
 
 
 def create_copy(path, filename):
@@ -267,13 +248,25 @@ def loop_copy(path, first_path):  # Permet de créer des copies à l'infini
     return path
 
 
-def ask_input():
-    msg = input("ftp_server$> ")
-    return msg
+def create_file(filename, data, destination):
+    path = destination
+    path = create_copy(path, filename)
+    with open(path, 'w') as f:
+        f.write(data)
+    print("The file has been successfully updated")
 
 
-def send_input(command, client):
-    client.send(command.encode("utf-8"))
+def print_list(code):
+    del code[0:2]
+    print("Result of the list command :")
+    for elem in code:
+        print("----> " + elem)
+
+
+def show_avaiable_city():
+    city = SELECT.sql_show_city()
+    for rows in city:
+        print("\nThe Directory available are :    " + str(rows[0]))
 
 
 def cmd_help():
@@ -288,15 +281,18 @@ def cmd_help():
     print("----Use : DEL {path.py of the directory/file}")
 
 
-def basic_prompt():
-    message = input("ftp_server$> ")
-    return message
-
-
-def show_avaiable_city():
-    city = SELECT.sql_show_city()
-    for rows in city:
-        print("\nThe Directory available are :    " + str(rows[0]))
+def success_print(client, code):
+    if code[1] == "0":
+        print("You are connected ! Press HELP, to see all the avaiable command")
+    elif code[1] == "1":
+        create_file(code[2], code[3], code[4])
+    elif code[1] == "2":
+        print("The file has been sent")
+    elif code[1] == "3":
+        print("The file has been deleted")
+    elif code[1] == "4":
+        print_list(code)
+    sort_cmd(client)
 
 
 main_connect()

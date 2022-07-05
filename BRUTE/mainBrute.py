@@ -21,7 +21,7 @@ def try_connect():  # Main function
         exit()
 
 
-def find_user(a_socket):  # Function to find an user that can login
+def find_user(a_socket):  # Function to find a user that can login
     f = open("success_user.txt", "w")
     with open("user.txt", "r") as a_file:
         for line in a_file:

@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('C:\\Users\\bapti\\Desktop\\SRC_FTP-master\\SQL\\ftpServer.db')
+conn = sqlite3.connect('C:\\Users\\bapti\\Desktop\\PYTHON_FTP\\SQL\\ftpServer.db')
 c = conn.cursor()
 
 c.execute('''
